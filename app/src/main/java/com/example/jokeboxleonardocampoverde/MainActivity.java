@@ -20,10 +20,13 @@ public class MainActivity extends AppCompatActivity {
 
         int max=20;
         int min=0;
-        int random_int = (int)Math.floor(Math.random() * (max - min + 1) + min);
-
+        int random_int = (int)Math.floor(Math.random() * (max - min) + min);//creo numero random
+        //creo un oggetto che Intent che mi passerà dall'activity main alla generazione del numero passandogli il numero in formato stringa e in formato numerico
         Intent intent = new Intent(MainActivity.this, numGenerato.class);
         intent.putExtra("num",Integer.toString(random_int));
+        intent.putExtra("intNum",random_int);
+
+        //avvio l'activity nuova
         startActivity(intent);
     }
 }

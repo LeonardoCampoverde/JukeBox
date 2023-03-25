@@ -16,10 +16,10 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.546"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.539" />
+        app:layout_constraintVertical_bias="0.365" />
 
     <TextView
         android:id="@+id/textView3"
@@ -54,11 +54,28 @@
         android:id="@+id/ascolta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ASCOLTA"
+        android:text="ASCOLTA SU\nYOUTUBE"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nome_canzone"
         app:layout_constraintVertical_bias="0.185" />
+
+
+    <ImageButton
+        android:layout_width="128dp"
+        android:layout_height="126dp"
+
+        android:id="@+id/player"
+        android:onClick="riproduci"
+        android:background="@null"
+        android:contentDescription="RIPRODUCI"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ascolta"
+        android:scaleType="fitCenter"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

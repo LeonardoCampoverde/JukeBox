@@ -1,12 +1,23 @@
-﻿package com.example.jokeboxleonardocampoverde;
+package com.example.jokeboxleonardocampoverde;
+
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.Manifest;
 import android.app.ActionBar;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,13 +26,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.nio.channels.Channel;
 
 public class numGenerato extends AppCompatActivity {
-
-
-
-
-
 
 
     //dichiaro l'oggetto Button che mi servirà per aggiungere il listener
@@ -32,7 +39,7 @@ public class numGenerato extends AppCompatActivity {
     private boolean riproduzione = false;
     private ImageButton player;
 
-    Canzone [] c = Canzone.init();
+    Canzone[] c = Canzone.init();
 
 
     @Override
@@ -41,30 +48,26 @@ public class numGenerato extends AppCompatActivity {
         setContentView(R.layout.num_generato);
 
 
-        player=findViewById(R.id.player);
-
-
+        player = findViewById(R.id.player);
 
 
         //trovo tramite id la textview in cui stamperò il numero ottenuto
-        TextView numero = (TextView)findViewById(R.id.num);
+        TextView numero = (TextView) findViewById(R.id.num);
         Bundle extras = getIntent().getExtras();
-        String num= extras.getString("num"); //ottengo il numero
-        if (num!=null){
+        String num = extras.getString("num"); //ottengo il numero
+        if (num != null) {
             numero.setText(num);//lo stampo dentro la textview
-        }
-
-        else{
+        } else {
             numero.setText("OMIODDIO UN ERRORE");
             return;
         }
 
         //ottengo il valore NUMERICO (int) del numero
 
-        int intNum=getIntent().getIntExtra("intNum",0);
+        int intNum = getIntent().getIntExtra("intNum", 0);
 
         //trovo tramite id la textview che in cui ci sarà il nome della canzone
-        TextView canzone = (TextView)findViewById(R.id.nome_canzone);
+        TextView canzone = (TextView) findViewById(R.id.nome_canzone);
         canzone.setText(c[intNum].nome);//imposto il nome della canzone
         //trovo tramite id il bottone in cui assocerò il link da aprire della rispettiva canzone
         ascolta = findViewById(R.id.ascolta);
@@ -79,52 +82,99 @@ public class numGenerato extends AppCompatActivity {
         player.setImageResource(R.drawable.play);
 
 
-
     }
 
 
-
-
-    public void ascoltaMusica(){
-        int intNum=getIntent().getIntExtra("intNum",0);
+    public void ascoltaMusica() {
+        int intNum = getIntent().getIntExtra("intNum", 0);
         //creo una nuova activity e apro il link della canzone
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(c[intNum].link));
         //avvio l'activity
         startActivity(intent);
     }
 
-    public void riproduci(View view){
-        Log.d("NUMGENERATO","FUNZIONE CHIAMATA: riproduci");
-        if(riproduzione){
+    public void riproduci(View view) {
+
+        if (riproduzione) {
             mediaPlayer.pause();
-            riproduzione=false;
+            riproduzione = false;
             player.setImageResource(R.drawable.play);
-            Log.d("NUMGENERATO",String.valueOf(player.getId()));
-        }
-        else{
+        } else {
             mediaPlayer.start();
-            riproduzione=true;
+            riproduzione = true;
             player.setImageResource(R.drawable.pause);
 
         }
     }
 
 
+    public void releasePlayer() {
+        try {
+            mediaPlayer.pause();
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        } catch (java.lang.IllegalStateException e) {
 
+        }
 
+    }
 
     @Override
-    protected void onDestroy(){
-        mediaPlayer.stop();
-        mediaPlayer.release();
+    protected void onDestroy() {
+        releasePlayer();
         super.onDestroy();
     }
 
     //crea la freccetta in alto a sinistra per andare indietro
 
     @Override
-    public boolean onSupportNavigateUp(){
+    public boolean onSupportNavigateUp() {
+        releasePlayer();
         onBackPressed();
         return true;
     }
+
+
+    public void notifica(View v) {
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notifica")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("LA NOTIFICA PIU FIGA")
+                .setContentText("OMIODDIO UNA NOTIFICA")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationChannel channel = new NotificationChannel("notifica", "nome", NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("descrizione");
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+        NotificationManagerCompat nnotificationManager = NotificationManagerCompat.from(this);
+
+// notificationId is a unique int for each notification that you must define
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        nnotificationManager.notify(1, builder.build());
+
+
+    }
+
+
+
+
+
 }

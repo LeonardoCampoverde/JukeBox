@@ -27,7 +27,6 @@ public class Canzone {
         c[6]=new Canzone("The Loneliest","https://www.youtube.com/watch?v=odWKEfp2QMY",R.raw.loneliest);
         c[7]=new Canzone("Non lo sai","https://www.youtube.com/watch?v=JQgHPTTXr0I",R.raw.nonolosai);
         c[8]=new Canzone("Le pietre non volano","https://www.youtube.com/watch?v=kEn6YsuH0KE",R.raw.lepietrenonvolano);
-
         c[9]=new Canzone("Bam bam","https://www.youtube.com/watch?v=-8VfKZCOo_I",R.raw.bambam);
         c[10]=new Canzone("Bellissima","https://www.youtube.com/watch?v=qz88Dx-_lA4",R.raw.bellissima);
         c[11]=new Canzone("Bloody Mary","https://www.youtube.com/watch?v=MsXdUtlDVhk",R.raw.bloodymary);

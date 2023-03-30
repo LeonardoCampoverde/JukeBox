@@ -17,19 +17,26 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.nio.channels.Channel;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class numGenerato extends AppCompatActivity {
 
+
+    SeekBar s;
 
     //dichiaro l'oggetto Button che mi servirà per aggiungere il listener
     private Button ascolta;
@@ -38,6 +45,7 @@ public class numGenerato extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private boolean riproduzione = false;
     private ImageButton player;
+    Timer t= new Timer();
 
     Canzone[] c = Canzone.init();
 
@@ -49,7 +57,7 @@ public class numGenerato extends AppCompatActivity {
 
 
         player = findViewById(R.id.player);
-
+        s=findViewById(R.id.seekBar);
 
         //trovo tramite id la textview in cui stamperò il numero ottenuto
         TextView numero = (TextView) findViewById(R.id.num);
@@ -81,8 +89,61 @@ public class numGenerato extends AppCompatActivity {
         mediaPlayer = MediaPlayer.create(this, c[intNum].path);
         player.setImageResource(R.drawable.play);
 
+        s.setMax(mediaPlayer.getDuration());
+
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                new AsyncTask() {
+                    @Override
+                    protected Integer doInBackground(Object[] objects) {
+                        if(riproduzione) {
+                            int percent;
+                            int position = mediaPlayer.getCurrentPosition();
+                            int timeRunning = mediaPlayer.getDuration();
+                            if (timeRunning == 0 || position == 0) {
+                                percent = 0;
+                            } else {
+                                percent = (position * 100) / timeRunning;
+                            }
+
+                            return percent;
+
+                        }
+                        return -1;
+                    }
+
+                    protected void onPostExecute(Integer result) {
+                        if(result  != -1){
+                            s.setProgress(result);}
+
+                    }
+
+                }.execute();
+            }
+        },0,1000);
+
+        s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                mediaPlayer.seekTo(i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
 
     }
+
+
 
 
     public void ascoltaMusica() {
@@ -110,6 +171,7 @@ public class numGenerato extends AppCompatActivity {
 
     public void releasePlayer() {
         try {
+            t.cancel();
             mediaPlayer.pause();
             mediaPlayer.stop();
             mediaPlayer.release();

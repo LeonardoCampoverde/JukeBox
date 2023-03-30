@@ -50,6 +50,7 @@
         app:layout_constraintTop_toBottomOf="@+id/num"
         app:layout_constraintVertical_bias="0.212" />
 
+
     <Button
         android:id="@+id/ascolta"
         android:layout_width="wrap_content"
@@ -57,25 +58,26 @@
         android:text="ASCOLTA SU\nYOUTUBE"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nome_canzone"
-        app:layout_constraintVertical_bias="0.185" />
-
+        app:layout_constraintVertical_bias="0.072" />
 
     <ImageButton
-        android:layout_width="128dp"
-        android:layout_height="126dp"
-
         android:id="@+id/player"
-        android:onClick="riproduci"
+        android:layout_width="128dp"
+
+        android:layout_height="126dp"
         android:background="@null"
         android:contentDescription="RIPRODUCI"
+        android:onClick="riproduci"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ascolta"
-        android:scaleType="fitCenter"
-        />
+        app:layout_constraintVertical_bias="0.753" />
 
     <Button
         android:id="@+id/notifica"
@@ -89,6 +91,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="275dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintBottom_toTopOf="@+id/player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ascolta" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

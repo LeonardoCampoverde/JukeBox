@@ -7,6 +7,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -92,6 +94,7 @@ public class numGenerato extends AppCompatActivity {
         s.setMax(mediaPlayer.getDuration());
 
         t.scheduleAtFixedRate(new TimerTask() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void run() {
                 new AsyncTask() {
@@ -139,6 +142,9 @@ public class numGenerato extends AppCompatActivity {
 
             }
         });
+
+        ImageView im = findViewById(R.id.imageView);
+        im.setImageResource(c[intNum].img);
 
 
     }

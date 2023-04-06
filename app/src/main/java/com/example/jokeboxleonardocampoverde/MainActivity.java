@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,4 +30,10 @@ public class MainActivity extends AppCompatActivity {
         //avvio l'activity nuova
         startActivity(intent);
     }
+
+    public void toast(View view){
+        Toast miao = Toast.makeText(this,"IL TOAST PIU FIGO",2500);
+        miao.show();
+    }
+
 }

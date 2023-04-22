@@ -1,6 +1,8 @@
 package com.example.jokeboxleonardocampoverde;
 
 
+import static java.lang.Thread.sleep;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -9,20 +11,27 @@ import androidx.core.app.NotificationManagerCompat;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,21 +42,21 @@ import java.io.IOException;
 import java.nio.channels.Channel;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 
 public class numGenerato extends AppCompatActivity {
+    String CHANNEL_ID = "player";
+    int CHANNEL_INT=1;
 
 
     SeekBar s;
 
-    //dichiaro l'oggetto Button che mi servirà per aggiungere il listener
-    private Button ascolta;
-
-
-    private MediaPlayer mediaPlayer;
-    private boolean riproduzione = false;
+    private AudioPlay mediaPlayer;
     private ImageButton player;
-    Timer t= new Timer();
+    int intNum;
 
     Canzone[] c = Canzone.init();
 
@@ -59,10 +68,10 @@ public class numGenerato extends AppCompatActivity {
 
 
         player = findViewById(R.id.player);
-        s=findViewById(R.id.seekBar);
+        s = findViewById(R.id.seekBar);
 
         //trovo tramite id la textview in cui stamperò il numero ottenuto
-        TextView numero = (TextView) findViewById(R.id.num);
+        TextView numero = findViewById(R.id.num);
         Bundle extras = getIntent().getExtras();
         String num = extras.getString("num"); //ottengo il numero
         if (num != null) {
@@ -74,62 +83,42 @@ public class numGenerato extends AppCompatActivity {
 
         //ottengo il valore NUMERICO (int) del numero
 
-        int intNum = getIntent().getIntExtra("intNum", 0);
+        intNum = getIntent().getIntExtra("intNum", 0)-1;
 
         //trovo tramite id la textview che in cui ci sarà il nome della canzone
         TextView canzone = (TextView) findViewById(R.id.nome_canzone);
         canzone.setText(c[intNum].nome);//imposto il nome della canzone
         //trovo tramite id il bottone in cui assocerò il link da aprire della rispettiva canzone
-        ascolta = findViewById(R.id.ascolta);
+        //dichiaro l'oggetto Button che mi servirà per aggiungere il listener
+        Button ascolta = findViewById(R.id.ascolta);
         //imposto la funzione da chiamare quando il bottone è premuto
-        ascolta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ascoltaMusica();//chiamo la funzione
-            }
+        ascolta.setOnClickListener(v -> {
+            ascoltaMusica();//chiamo la funzione
         });
-        mediaPlayer = MediaPlayer.create(this, c[intNum].path);
+
+        mediaPlayer=new AudioPlay(this, c[intNum].path);
+        //audioPlay= new AudioPlay(mediaPlayer);
         player.setImageResource(R.drawable.play);
 
-        s.setMax(mediaPlayer.getDuration());
+        s.setMax(mediaPlayer.duration());
 
-        t.scheduleAtFixedRate(new TimerTask() {
-            @SuppressLint("StaticFieldLeak")
+
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                new AsyncTask() {
-                    @Override
-                    protected Integer doInBackground(Object[] objects) {
-                        if(riproduzione) {
-                            int percent;
-                            int position = mediaPlayer.getCurrentPosition();
-                            int timeRunning = mediaPlayer.getDuration();
-                            if (timeRunning == 0 || position == 0) {
-                                percent = 0;
-                            } else {
-                                percent = (position * 100) / timeRunning;
-                            }
-
-                            return percent;
-
-                        }
-                        return -1;
-                    }
-
-                    protected void onPostExecute(Integer result) {
-                        if(result  != -1){
-                            s.setProgress(result);}
-
-                    }
-
-                }.execute();
+                s.setProgress(mediaPlayer.currentPosition());
             }
-        },0,1000);
+        },0,900);
+
 
         s.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                mediaPlayer.seekTo(i);
+                    if(b)
+                        mediaPlayer.setSeek(i);
+
+
             }
 
             @Override
@@ -142,6 +131,19 @@ public class numGenerato extends AppCompatActivity {
 
             }
         });
+        mediaPlayer.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                s.setProgress(1);
+                player.setImageResource(R.drawable.play);
+                mediaPlayer.pauseAudio();
+            }
+
+        });
+
+
+
 
         ImageView im = findViewById(R.id.imageView);
         im.setImageResource(c[intNum].img);
@@ -151,6 +153,21 @@ public class numGenerato extends AppCompatActivity {
 
 
 
+    public void lyrics(View v){
+        Intent intent = new Intent(getApplicationContext(),Lyrics.class);
+        intent.putExtra("resTitle",c[intNum].nameAsset);
+        startActivity(intent);
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(mediaPlayer.isplayingAudio){
+            player.setImageResource(R.drawable.pause);
+        }
+        else{
+            player.setImageResource(R.drawable.play);
+        }
+    }
 
     public void ascoltaMusica() {
         int intNum = getIntent().getIntExtra("intNum", 0);
@@ -162,13 +179,11 @@ public class numGenerato extends AppCompatActivity {
 
     public void riproduci(View view) {
 
-        if (riproduzione) {
-            mediaPlayer.pause();
-            riproduzione = false;
+        if (mediaPlayer.isplayingAudio) {
+            mediaPlayer.pauseAudio();
             player.setImageResource(R.drawable.play);
         } else {
-            mediaPlayer.start();
-            riproduzione = true;
+            mediaPlayer.playAudio();
             player.setImageResource(R.drawable.pause);
 
         }
@@ -177,20 +192,25 @@ public class numGenerato extends AppCompatActivity {
 
     public void releasePlayer() {
         try {
-            t.cancel();
-            mediaPlayer.pause();
-            mediaPlayer.stop();
-            mediaPlayer.release();
+            mediaPlayer.pauseAudio();
+            mediaPlayer.stopAudio();
+
         } catch (java.lang.IllegalStateException e) {
 
         }
 
     }
-
     @Override
     protected void onDestroy() {
         releasePlayer();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        notifica();
+
     }
 
     //crea la freccetta in alto a sinistra per andare indietro
@@ -199,31 +219,47 @@ public class numGenerato extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         releasePlayer();
         onBackPressed();
+
+
         return true;
     }
 
-
-    public void notifica(View v) {
-
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "notifica")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("LA NOTIFICA PIU FIGA")
-                .setContentText("OMIODDIO UNA NOTIFICA")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
+    private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            NotificationChannel channel = new NotificationChannel("notifica", "nome", NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("descrizione");
+            CharSequence name = "player";
+            String description = "DESCRIZIONE";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-        NotificationManagerCompat nnotificationManager = NotificationManagerCompat.from(this);
+    }
+
+    public void notifica() {
+
+        createNotificationChannel();
+
+
+// Create an explicit intent for an Activity in your app
+        Intent intent2 = new Intent(this, MediaPlayerRec.class);
+        PendingIntent p = PendingIntent.getBroadcast(this, 0, intent2, PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Media Player")
+                .setContentText(c[intNum].nome)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .addAction(R.drawable.play,"play",p);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+
 
 // notificationId is a unique int for each notification that you must define
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -236,7 +272,9 @@ public class numGenerato extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        nnotificationManager.notify(1, builder.build());
+        notificationManager.notify(CHANNEL_INT, builder.build());
+
+
 
 
     }

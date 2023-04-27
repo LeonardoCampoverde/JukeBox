@@ -1,8 +1,5 @@
 package com.example.jokeboxleonardocampoverde;
 
-import android.content.res.AssetManager;
-
-import java.io.InputStreamReader;
 
 public class Canzone {
 

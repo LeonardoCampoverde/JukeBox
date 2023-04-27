@@ -3,11 +3,7 @@ package com.example.jokeboxleonardocampoverde;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.util.Log;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class MediaPlayerRec extends BroadcastReceiver {
 

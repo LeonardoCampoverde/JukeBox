@@ -1,7 +1,7 @@
 package com.example.jokeboxleonardocampoverde;
 
 
-import static java.lang.Thread.sleep;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -9,42 +9,31 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.media.MediaPlayer;
+
 import android.net.Uri;
-import android.os.AsyncTask;
+
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
+
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.nio.channels.Channel;
+
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Logger;
+
 
 
 public class numGenerato extends AppCompatActivity {
@@ -131,15 +120,10 @@ public class numGenerato extends AppCompatActivity {
 
             }
         });
-        mediaPlayer.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                s.setProgress(1);
-                player.setImageResource(R.drawable.play);
-                mediaPlayer.pauseAudio();
-            }
-
+        mediaPlayer.mediaPlayer.setOnCompletionListener(mp -> {
+            s.setProgress(1);
+            player.setImageResource(R.drawable.play);
+            mediaPlayer.pauseAudio();
         });
 
 
@@ -196,7 +180,7 @@ public class numGenerato extends AppCompatActivity {
             mediaPlayer.stopAudio();
 
         } catch (java.lang.IllegalStateException e) {
-
+            Log.e("ERRORE","RELEASE PLAYER CATCH BLOCK");
         }
 
     }

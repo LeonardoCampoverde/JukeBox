@@ -2,10 +2,6 @@ package com.example.jokeboxleonardocampoverde;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
-
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -60,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
         miao.show();
     }
     public void incrementa(View v){
-        int num= Integer.valueOf((String) numero.getText());
-        int inputNum= Integer.valueOf(input.getText().toString());
+        int num= Integer.parseInt((String) numero.getText());
+        int inputNum= Integer.parseInt(input.getText().toString());
         int sum= num+inputNum;
         if(sum>20){
             sum=20;
@@ -77,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void decrementa(View v) {
-        int num = Integer.valueOf((String) numero.getText());
-        int inputNum = Integer.valueOf(input.getText().toString());
+        int num = Integer.parseInt((String) numero.getText());
+        int inputNum = Integer.parseInt(input.getText().toString());
         int sum = num - inputNum;
         if (sum < 1) {
             sum = 1;

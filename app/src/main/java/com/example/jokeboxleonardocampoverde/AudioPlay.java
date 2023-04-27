@@ -1,9 +1,7 @@
 package com.example.jokeboxleonardocampoverde;
 
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 
 public class AudioPlay {
 
@@ -58,12 +56,6 @@ public class AudioPlay {
         isplayingAudio=false;
         mediaPlayer.stop();
     }
-
-
-    public static MediaPlayer getMP(){
-        return mediaPlayer;
-    }
-
 
 
 

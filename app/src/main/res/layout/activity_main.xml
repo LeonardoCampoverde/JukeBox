@@ -53,6 +53,7 @@
     <EditText
         android:id="@+id/inputnumero"
         android:layout_width="217dp"
+
         android:layout_height="103dp"
         android:ems="10"
         android:inputType="number"
